@@ -1,17 +1,24 @@
-import { Token, CombinedCSS } from "./mini-css.interfaces";
-import { getProps, getSelector } from "./min-css.helpers";
+import { Token, CombinedToken } from "./mini-css.interfaces";
+import {
+  getProps,
+  getSelector,
+  filterCominedToken,
+  isMatch
+} from "./min-css.helpers";
 
 export class MiniCss {
   private $$css: string;
   private $$blocks: Array<string>;
   private $$tokens: Array<Token>;
-  private $$tokensAfterCombine: Array<Token | CombinedCSS>;
+  private $$tokensAfterCombine: Array<Token | CombinedToken>;
+  private $$tokensAfterMinify: Array<Token | CombinedToken>;
 
   constructor(css: string) {
     this.$$css = css;
     this.$$blocks = this.split();
     this.$$tokens = this.tokenizer();
     this.$$tokensAfterCombine = this.combine();
+    this.$$tokensAfterMinify = this.minify();
   }
 
   public static compile(css: string): string {
@@ -44,46 +51,96 @@ export class MiniCss {
     });
   }
 
-  private combine(): Array<Token | CombinedCSS> {
+  private combine(): Array<Token | CombinedToken> {
     // deep copy tokens to prevent any edits
     let tokens: Token[] = this.$$tokens.map(token => {
       const { selector, props } = token;
       return { selector, props: [...props] };
     });
 
-    const result: Array<Token | CombinedCSS> = [];
+    const result: Array<Token | CombinedToken> = [];
 
     for (let a = 0, max = tokens.length; a < max; a++) {
       const currentToken = tokens[a];
-      currentToken.props = currentToken.props.filter(currentProp => {
-        let notExist = true;
-
-        for (let b = a + 1; b < max; b++) {
-          const innerToken = tokens[b];
-
-          innerToken.props = innerToken.props.filter(innerProp => {
-            if (
-              innerProp.name === currentProp.name &&
-              innerProp.value === currentProp.value
-            ) {
-              notExist = false;
-              result.push({
-                selectors: [currentToken.selector, innerToken.selector],
-                prop: {
-                  name: innerProp.name,
-                  value: innerProp.value
-                }
-              });
-              return false;
-            }
-            return true;
-          });
-        }
-        return notExist;
-      });
+      currentToken.props = filterCominedToken(
+        currentToken,
+        a,
+        max,
+        tokens,
+        result
+      );
     }
     tokens = tokens.filter(token => !!token.props.length);
-    console.log(JSON.stringify([...result, ...tokens], undefined, 2));
     return [...result, ...tokens];
   }
+
+  private minify(): Array<Token | CombinedToken> {
+    // deep copy tokens
+    let tokens: Array<Token | CombinedToken> = this.$$tokensAfterCombine.map(
+      token => {
+        if ("selector" in token) {
+          return {
+            selector: token.selector,
+            props: token.props.map(prop => ({ ...prop }))
+          } as Token;
+        } else {
+          return {
+            selectors: token.selectors,
+            props: token.props.map(prop => ({ ...prop }))
+          } as CombinedToken;
+        }
+      }
+    );
+
+    for (let a = 0, max = tokens.length; a < max; a++) {
+      const currentToken = tokens[a];
+      if ("selector" in currentToken) {
+        continue;
+      }
+      const currentRemove = currentToken.remove;
+      if (currentRemove) {
+        continue;
+      }
+
+      const currentSelectors = currentToken.selectors;
+      const cuurentProps = currentToken.props;
+
+      for (let b = a + 1; b < max; b++) {
+        const innerToken = tokens[b];
+        if ("selector" in innerToken) {
+          continue;
+        }
+
+        const innerRemove = innerToken.remove;
+        if (innerRemove) {
+          continue;
+        }
+
+        const innerSelectors = innerToken.selectors;
+        const innerProps = innerToken.props;
+
+        if (isMatch(currentSelectors, innerSelectors)) {
+          innerToken.remove = true;
+          cuurentProps.push(...innerProps);
+        }
+      }
+    }
+    tokens = tokens.filter(token => !(token as any)["remove"]);
+    console.log(JSON.stringify(tokens, undefined, 2));
+    return tokens;
+  }
 }
+
+MiniCss.compile(`
+  body {
+    color: blue;
+    font-weight: 400;
+  }
+  .test {
+    color: blue;
+    font-weight: 400;
+  }
+  body::after {
+    font-weight: bold;
+  }
+`);

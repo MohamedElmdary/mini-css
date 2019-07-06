@@ -8,7 +8,8 @@ export interface Token {
   props: Array<Property>;
 }
 
-export interface CombinedCSS {
+export interface CombinedToken {
   selectors: string[];
-  prop: Property;
+  props: Property[];
+  remove?: boolean;
 }
