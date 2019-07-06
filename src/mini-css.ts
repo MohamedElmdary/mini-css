@@ -1,8 +1,14 @@
+import { Token } from "./mini-css.interfaces";
+
 class MiniCss {
   private $$css: string;
+  private $$blocks: string[];
+  private $$tokens: Token[];
 
   constructor(css: string) {
     this.$$css = css;
+    this.$$blocks = this.split();
+    this.$$tokens = this.tokenizer();
   }
 
   public static compile(css: string): string {
@@ -20,6 +26,11 @@ class MiniCss {
       blocks.push(block);
       current = n + 1;
     }
+    this.$$blocks = blocks;
     return blocks;
+  }
+
+  private tokenizer(): Token[] {
+    return [];
   }
 }
