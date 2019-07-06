@@ -10,7 +10,9 @@ import {
 export class MiniCss {
   private $$code: string;
   private $$imports: string[] = [];
+  private $$medias: string[] = [];
   private $$noImports: string;
+  private $$noMedias: string;
   private $$css: string;
   private $$blocks: Array<string>;
   private $$tokens: Array<Token>;
@@ -21,6 +23,7 @@ export class MiniCss {
   constructor(css: string) {
     this.$$code = css;
     this.$$noImports = this.removeImports();
+    this.$$noMedias = this.removeMedias();
     this.$$css = this.removeComments();
     this.$$blocks = this.split();
     this.$$tokens = this.tokenizer();
@@ -35,15 +38,49 @@ export class MiniCss {
   }
 
   private removeImports(): string {
-    const code = this.$$code.replace(/@.*;/gi, imp => {
+    const code = this.$$code.replace(/@import.*;/gi, imp => {
       this.$$imports.push(imp.trim());
       return "";
     });
     return code;
   }
 
+  private removeMedias(): string {
+    let code = this.$$noImports;
+    for (;;) {
+      let current = code.indexOf("@media");
+      if (current === -1) {
+        break;
+      }
+      let start = current;
+      current += 6;
+      let openCurl = 0;
+      let value = "@media";
+      for (;;) {
+        const c = code[current];
+        if (c === "{") {
+          openCurl += 1;
+          value += c;
+        } else if (c === "}") {
+          value += c;
+          if (openCurl === 1) {
+            break;
+          } else {
+            openCurl -= 1;
+          }
+        } else {
+          value += c;
+        }
+        current++;
+      }
+      this.$$medias.push(value);
+      code = code.slice(0, start) + code.slice(current);
+    }
+    return code;
+  }
+
   private removeComments(): string {
-    return this.$$noImports.replace(/(\/\*.*\*\/)|(\/\/.*\n)/gi, "").trim();
+    return this.$$noMedias.replace(/(\/\*.*\*\/)|(\/\/.*\n)/gi, "").trim();
   }
 
   private split(): Array<string> {
