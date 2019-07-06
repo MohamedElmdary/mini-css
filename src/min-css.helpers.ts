@@ -23,11 +23,12 @@ export function getProps(
     .map(item => {
       const z = item.split(":");
       return {
-        name: z[0],
+        name: z[0].trim(),
         value: z[1]
           .split(",")
           .map(a => a.trim())
           .join(", ")
+          .trim()
       };
     });
 }
