@@ -1,7 +1,11 @@
 {
-  "name": "MiniCss",
+  "name": "mini-css",
   "version": "1.0.0",
   "description": "tool to compile css to combined css properties",
+  "scripts": {
+    "start": "ts-node ./src/mini-css.ts",
+    "test": "...later..."
+  },
   "main": "compile.ts",
   "repository": "https://github.com/MohamedElmdary/mini-css",
   "author": "MohamedElmdary",

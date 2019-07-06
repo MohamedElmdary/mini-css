@@ -1,5 +1,15 @@
 import { Property } from "./mini-css.interfaces";
 
+export function getSelector(block: string, lParIndex: number): string {
+  return block
+    .slice(0, lParIndex)
+    .trim()
+    .replace(/\s+/gi, " ")
+    .split(", ")
+    .map(a => a.trim())
+    .join(", ");
+}
+
 export function getProps(
   block: string,
   lParIndex: number,

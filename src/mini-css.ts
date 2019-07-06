@@ -1,5 +1,5 @@
 import { Token } from "./mini-css.interfaces";
-import { getProps } from "./min-css.helpers";
+import { getProps, getSelector } from "./min-css.helpers";
 
 class MiniCss {
   private $$css: string;
@@ -35,7 +35,7 @@ class MiniCss {
     return this.$$blocks.map(b => {
       const block = b.trim();
       const lParIndex = block.indexOf("{");
-      const selector = block.slice(0, lParIndex).trim();
+      const selector = getSelector(block, lParIndex);
       const rParIndex = block.indexOf("}");
       const props = getProps(block, lParIndex, rParIndex);
       return { selector, props };
