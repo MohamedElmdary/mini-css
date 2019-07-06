@@ -78,3 +78,9 @@ export function isMatch(arr1: string[], arr2: string[]): boolean {
   const checkerSet = new Set([...arr1, ...arr2]);
   return checkerSet.size === arr1.length;
 }
+
+export function generatePropsCode(token: Token | CombinedToken): string {
+  return token.props
+    .map(prop => prop.name + ": " + prop.value)
+    .join(";\n\t    ");
+}

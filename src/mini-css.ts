@@ -3,28 +3,35 @@ import {
   getProps,
   getSelector,
   filterCominedToken,
-  isMatch
+  isMatch,
+  generatePropsCode
 } from "./min-css.helpers";
 
 export class MiniCss {
+  // private $$code: string;
   private $$css: string;
   private $$blocks: Array<string>;
   private $$tokens: Array<Token>;
   private $$tokensAfterCombine: Array<Token | CombinedToken>;
   private $$tokensAfterMinify: Array<Token | CombinedToken>;
+  private $$generatedCSS: string;
 
   constructor(css: string) {
     this.$$css = css;
+    // this.$$css = this.removeComments();
     this.$$blocks = this.split();
     this.$$tokens = this.tokenizer();
     this.$$tokensAfterCombine = this.combine();
     this.$$tokensAfterMinify = this.minify();
+    this.$$generatedCSS = this.generateCode();
   }
 
   public static compile(css: string): string {
     const mc = new MiniCss(css);
     return "";
   }
+
+  // private
 
   private split(): Array<string> {
     const blocks: Array<string> = [];
@@ -126,8 +133,29 @@ export class MiniCss {
       }
     }
     tokens = tokens.filter(token => !(token as any)["remove"]);
-    console.log(JSON.stringify(tokens, undefined, 2));
     return tokens;
+  }
+
+  private generateCode(): string {
+    let result = "";
+    this.$$tokensAfterMinify.forEach(token => {
+      if ("selector" in token) {
+        result += `
+          ${token.selector} {
+            ${generatePropsCode(token)}
+          }
+        `;
+      } else {
+        result += `
+          ${token.selectors.join(",\n\t  ")} {
+            ${generatePropsCode(token)}
+          }
+        `;
+      }
+    });
+    console.log(result);
+
+    return result;
   }
 }
 
@@ -135,10 +163,12 @@ MiniCss.compile(`
   body {
     color: blue;
     font-weight: 400;
+    font-family: Tahoma,  Arial;
   }
   .test {
     color: blue;
     font-weight: 400;
+    font-family: Tahoma,  Arial;
   }
   body::after {
     font-weight: bold;
