@@ -100,3 +100,13 @@ export function isMatch(arr1: string[], arr2: string[]): boolean {
 export function generatePropsCode(token: Token | CombinedToken): string {
   return token.props.map(prop => prop.name + ":" + prop.value).join(";");
 }
+
+export function logger(
+  info: boolean,
+  msg: string,
+  color: string = "\x1b[36m%s\x1b[0m"
+): void {
+  if (info) {
+    console.log(color, msg);
+  }
+}

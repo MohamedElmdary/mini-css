@@ -4,7 +4,8 @@ import {
   getSelector,
   filterCominedToken,
   isMatch,
-  generatePropsCode
+  generatePropsCode,
+  logger
 } from "./min-css.helpers";
 
 export class MiniCss {
@@ -23,21 +24,35 @@ export class MiniCss {
   private $$tokensAfterMinify: Array<Token | CombinedToken>;
   private $$generatedCSS: string;
 
-  constructor(css: string) {
+  constructor(css: string, info: boolean = true) {
     this.$$code = css;
+    logger(info, "removing @import statements...");
     this.$$noImports = this.removeImports();
+    logger(info, "removing @media statements...");
     this.$$noMedias = this.removeMedias();
+    logger(info, "removing @keyframes statements...");
     this.$$noKeyFrames = this.removeKeyFrames();
+    logger(info, "removing comments...");
     this.$$css = this.removeComments();
+    logger(info, "spliting code into blocks...");
     this.$$blocks = this.split();
+    logger(info, "generating tokens...");
     this.$$tokens = this.tokenizer();
+    logger(info, "combine tokens...");
     this.$$tokensAfterCombine = this.combine();
+    logger(info, "minify combined tokens...");
     this.$$tokensAfterMinify = this.minify();
+    logger(info, "generating code!!");
     this.$$generatedCSS = this.generateCode();
+    logger(
+      info,
+      "/*===================================*/\nThanks for using mini-css\ncreator: Mohamed Rabie Rabie Elmdary\nGithub: https://github.com/MohamedElmdary",
+      "\x1b[33m%s\x1b[0m"
+    );
   }
 
-  public static compile(css: string): string {
-    const mc = new MiniCss(css);
+  public static compile(css: string, info: boolean = true): string {
+    const mc = new MiniCss(css, info);
     return mc.$$generatedCSS;
   }
 
@@ -128,7 +143,7 @@ export class MiniCss {
     const firstLeftPra = media.indexOf("{");
     const mediaCode = media.slice(0, firstLeftPra);
     const code = media.slice(firstLeftPra + 1, media.length - 1);
-    const mc = MiniCss.compile(code);
+    const mc = MiniCss.compile(code, false);
     return mediaCode + "{" + mc + "}";
   }
 
