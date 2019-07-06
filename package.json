@@ -5,7 +5,7 @@
   "scripts": {
     "start": "ts-node ./src/mini-css.ts",
     "example": "ts-node ./example/example.ts",
-    "test": "...later..."
+    "test": "ts-mocha -p ./tsconfig.json ./test/**.spec.ts"
   },
   "main": "compile.ts",
   "repository": "https://github.com/MohamedElmdary/mini-css",
@@ -13,6 +13,11 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {
+    "@types/expect": "^1.20.4",
+    "@types/mocha": "^5.2.7",
+    "expect": "^24.8.0",
+    "mocha": "^6.1.4",
+    "ts-mocha": "^6.0.0",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.2"
   }
