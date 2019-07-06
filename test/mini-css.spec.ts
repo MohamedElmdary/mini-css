@@ -172,7 +172,7 @@ describe("Mini Css Tests", () => {
           selector: '.test > span + input:checked ~ label[for="input"]',
           props: [{ name: "color", value: "#333" }]
         }
-      ] as Token[];
+      ];
       expect(mc.tokens).toEqual(ts);
     });
 
