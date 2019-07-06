@@ -76,11 +76,25 @@ export class MiniCss {
       this.$$medias.push(value);
       code = code.slice(0, start) + code.slice(current);
     }
+    this.$$medias = this.$$medias
+      .map(this.removeComments)
+      .map(this.minifyMedia);
     return code;
   }
 
-  private removeComments(): string {
-    return this.$$noMedias.replace(/(\/\*.*\*\/)|(\/\/.*\n)/gi, "").trim();
+  private minifyMedia(media: string): string {
+    const firstLeftPra = media.indexOf("{");
+    const mediaCode = media.slice(0, firstLeftPra);
+    const code = media.slice(firstLeftPra + 1, media.length - 1);
+    const mc = MiniCss.compile(code);
+    return mediaCode + "{" + mc + "}";
+  }
+
+  private removeComments(code?: string): string {
+    if (!code) {
+      return this.removeComments(this.$$noMedias);
+    }
+    return code.replace(/\/\*[^*]*\*+([^/*][^*]*\*+)*\//gi, "").trim();
   }
 
   private split(): Array<string> {
@@ -202,6 +216,6 @@ export class MiniCss {
           .join(",")}{${generatePropsCode(token)}{${generatePropsCode(token)}}`;
       }
     });
-    return this.$$imports.join("\n") + result;
+    return this.$$imports.join("\n") + result + this.$$medias.join("");
   }
 }
