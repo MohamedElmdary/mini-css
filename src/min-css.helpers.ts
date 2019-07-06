@@ -40,6 +40,7 @@ export function filterCominedToken(
   tokens: Token[],
   result: Array<Token | CombinedToken>
 ): Property[] {
+  let combinedProp: CombinedToken | null;
   return currentToken.props.filter(currentProp => {
     let notExist = true;
 
@@ -52,19 +53,30 @@ export function filterCominedToken(
           innerProp.value === currentProp.value
         ) {
           notExist = false;
-          result.push({
-            selectors: [currentToken.selector, innerToken.selector],
-            props: [
-              {
-                name: innerProp.name,
-                value: innerProp.value
-              }
-            ]
-          });
+          if (!combinedProp) {
+            combinedProp = {
+              selectors: [currentToken.selector, innerToken.selector],
+              props: [
+                {
+                  name: innerProp.name,
+                  value: innerProp.value
+                }
+              ]
+            };
+          } else {
+            combinedProp.selectors = [
+              ...combinedProp.selectors,
+              innerToken.selector
+            ];
+          }
           return false;
         }
         return true;
       });
+    }
+    if (combinedProp) {
+      result.push(combinedProp);
+      combinedProp = null;
     }
     return notExist;
   });
@@ -80,7 +92,5 @@ export function isMatch(arr1: string[], arr2: string[]): boolean {
 }
 
 export function generatePropsCode(token: Token | CombinedToken): string {
-  return token.props
-    .map(prop => prop.name + ": " + prop.value)
-    .join(";\n\t    ");
+  return token.props.map(prop => prop.name + ":" + prop.value).join(";");
 }

@@ -153,17 +153,9 @@ export class MiniCss {
     let result = "";
     this.$$tokensAfterMinify.forEach(token => {
       if ("selector" in token) {
-        result += `
-          ${token.selector} {
-            ${generatePropsCode(token)}
-          }
-        `;
+        result += `${token.selector}{${generatePropsCode(token)}}`;
       } else {
-        result += `
-          ${token.selectors.join(",\n\t  ")} {
-            ${generatePropsCode(token)}
-          }
-        `;
+        result += `${token.selectors.join(",")}{${generatePropsCode(token)}}`;
       }
     });
     return this.$$imports.join("\n") + result;
