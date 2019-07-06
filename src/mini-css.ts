@@ -154,14 +154,16 @@ export class MiniCss {
   }
 
   private tokenizer(): Array<Token> {
-    return this.$$blocks.map(b => {
-      const block = b.trim();
-      const lParIndex = block.indexOf("{");
-      const selector = getSelector(block, lParIndex);
-      const rParIndex = block.indexOf("}");
-      const props = getProps(block, lParIndex, rParIndex);
-      return { selector, props };
-    });
+    return this.$$blocks
+      .map(b => {
+        const block = b.trim();
+        const lParIndex = block.indexOf("{");
+        const selector = getSelector(block, lParIndex);
+        const rParIndex = block.indexOf("}");
+        const props = getProps(block, lParIndex, rParIndex);
+        return { selector, props };
+      })
+      .filter(a => !!(a.selector && a.props.length));
   }
 
   private combine(): Array<Token | CombinedToken> {
@@ -262,7 +264,7 @@ export class MiniCss {
       }
     });
     return (
-      this.$$imports.join("\n") +
+      this.$$imports.join("") +
       result +
       this.$$medias.join("") +
       this.$$keyframes.join("")
