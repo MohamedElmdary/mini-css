@@ -12,6 +12,7 @@ export class MiniCss {
   private $$imports: string[] = [];
   private $$medias: string[] = [];
   private $$keyframes: string[] = [];
+  private $$changes: CombinedToken[] = [];
   private $$noImports: string;
   private $$noMedias: string;
   private $$noKeyFrames: string;
@@ -183,6 +184,9 @@ export class MiniCss {
       );
     }
     tokens = tokens.filter(token => !!token.props.length);
+    this.$$changes = result.filter(
+      token => "selectors" in token
+    ) as CombinedToken[];
     return [...result, ...tokens];
   }
 

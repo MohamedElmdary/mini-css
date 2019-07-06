@@ -1263,9 +1263,9 @@ a.scroll-top:hover {
 
 `;
 
-console.log(MiniCss.compile(css));
+// console.log(MiniCss.compile(css));
 
-// MiniCss.compile(css);
+MiniCss.compile(css);
 
 /* 
 // Output
