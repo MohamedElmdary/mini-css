@@ -12,7 +12,7 @@ describe("Mini Css Tests", () => {
       }
     `;
 
-    const mc = MiniCss.compile(css);
+    const mc = MiniCss.compile(css, false);
     it("should be equal", () => {
       expect(mc).toEqual("div,span{color:blue}");
     });
@@ -28,7 +28,7 @@ describe("Mini Css Tests", () => {
       }
     `;
 
-    const mc = new MiniCss(css);
+    const mc = new MiniCss(css, false);
 
     it("code", () => {
       expect(mc.code).toEqual(css);
@@ -100,7 +100,7 @@ describe("Mini Css Tests", () => {
       keyframes.join("");
 
     it("should be equal", () => {
-      expect(MiniCss.compile(css)).toEqual(expected);
+      expect(MiniCss.compile(css, false)).toEqual(expected);
     });
   });
 
@@ -128,7 +128,7 @@ describe("Mini Css Tests", () => {
       medias.join("") +
       keyframes.join("");
 
-    const mc = new MiniCss(css);
+    const mc = new MiniCss(css, false);
 
     it("code", () => {
       expect(mc.code).toEqual(css);
