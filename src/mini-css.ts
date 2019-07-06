@@ -213,7 +213,7 @@ export class MiniCss {
           .join(",")
           .split(",")
           .map(a => a.trim())
-          .join(",")}{${generatePropsCode(token)}{${generatePropsCode(token)}}`;
+          .join(",")}{${generatePropsCode(token)}}`;
       }
     });
     return this.$$imports.join("\n") + result + this.$$medias.join("");
