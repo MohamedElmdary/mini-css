@@ -15,13 +15,15 @@ export function getProps(
   lParIndex: number,
   rParIndex: number
 ): Property[] {
-  return block
+  const b = block
     .slice(lParIndex + 1, rParIndex)
     .trim()
     .split(";")
     .filter(a => !!a)
     .map(item => {
-      const z = item.split(":");
+      // fixed issue of background-image
+      const firstColon = item.indexOf(":");
+      const z = [item.slice(0, firstColon), item.slice(firstColon + 1)];
       return {
         name: z[0].trim(),
         value: z[1]
@@ -31,6 +33,7 @@ export function getProps(
           .trim()
       };
     });
+  return b;
 }
 
 export function filterCominedToken(
@@ -75,6 +78,9 @@ export function filterCominedToken(
       });
     }
     if (combinedProp) {
+      if (combinedProp.props[0].name === "background-image") {
+        // console.log(combinedProp);
+      }
       result.push(combinedProp);
       combinedProp = null;
     }
