@@ -4,6 +4,7 @@
   "description": "tool to compile css to combined css properties",
   "scripts": {
     "start": "ts-node ./src/mini-css.ts",
+    "example": "ts-node ./example/example.ts",
     "test": "...later..."
   },
   "main": "compile.ts",

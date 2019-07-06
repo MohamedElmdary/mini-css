@@ -31,7 +31,7 @@ export class MiniCss {
 
   public static compile(css: string): string {
     const mc = new MiniCss(css);
-    return "";
+    return mc.$$generatedCSS;
   }
 
   private removeImports(): string {
