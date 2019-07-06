@@ -1,0 +1,10 @@
+{
+  "name": "MiniCss",
+  "version": "1.0.0",
+  "description": "tool to compile css to combined css properties",
+  "main": "compile.ts",
+  "repository": "https://github.com/MohamedElmdary/mini-css",
+  "author": "MohamedElmdary",
+  "license": "MIT",
+  "private": false
+}
