@@ -1,6 +1,6 @@
 # Mini-CSS
 
-## _Mini-CSS_ is a simple compiler that compile css into minified css and combine css property.
+**_Mini-CSS_** is a simple compiler that compile css into minified css and combine css property.
 
 ---
 
