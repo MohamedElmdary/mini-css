@@ -153,9 +153,16 @@ export class MiniCss {
     let result = "";
     this.$$tokensAfterMinify.forEach(token => {
       if ("selector" in token) {
-        result += `${token.selector}{${generatePropsCode(token)}}`;
+        result += `${token.selector
+          .split(",")
+          .map(a => a.trim())
+          .join(",")}{${generatePropsCode(token)}}`;
       } else {
-        result += `${token.selectors.join(",")}{${generatePropsCode(token)}}`;
+        result += `${token.selectors
+          .join(",")
+          .split(",")
+          .map(a => a.trim())
+          .join(",")}{${generatePropsCode(token)}{${generatePropsCode(token)}}`;
       }
     });
     return this.$$imports.join("\n") + result;
