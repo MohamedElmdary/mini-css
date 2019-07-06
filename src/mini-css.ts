@@ -268,4 +268,41 @@ export class MiniCss {
       this.$$keyframes.join("")
     );
   }
+
+  /* getters */
+  get code(): string {
+    return this.$$code;
+  }
+
+  get imports(): string[] {
+    return this.$$imports;
+  }
+
+  get medias(): string[] {
+    return this.$$medias;
+  }
+
+  get keyframes(): string[] {
+    return this.$$keyframes;
+  }
+
+  get combinedTokens(): CombinedToken[] {
+    return this.$$changes;
+  }
+
+  get tokens(): Token[] {
+    return this.$$tokens;
+  }
+
+  get tokensAfterCombine(): Array<Token | CombinedToken> {
+    return this.$$tokensAfterCombine;
+  }
+
+  get minfiedTokensAfterCombine(): Array<Token | CombinedToken> {
+    return this.$$tokensAfterMinify;
+  }
+
+  get generatedCSS(): string {
+    return this.$$generatedCSS;
+  }
 }
