@@ -11,8 +11,10 @@ export class MiniCss {
   private $$code: string;
   private $$imports: string[] = [];
   private $$medias: string[] = [];
+  private $$keyframes: string[] = [];
   private $$noImports: string;
   private $$noMedias: string;
+  private $$noKeyFrames: string;
   private $$css: string;
   private $$blocks: Array<string>;
   private $$tokens: Array<Token>;
@@ -24,6 +26,7 @@ export class MiniCss {
     this.$$code = css;
     this.$$noImports = this.removeImports();
     this.$$noMedias = this.removeMedias();
+    this.$$noKeyFrames = this.removeKeyFrames();
     this.$$css = this.removeComments();
     this.$$blocks = this.split();
     this.$$tokens = this.tokenizer();
@@ -82,6 +85,44 @@ export class MiniCss {
     return code;
   }
 
+  private removeKeyFrames(): string {
+    let code = this.$$noMedias;
+    const framesPoints: string[] = [];
+    code.replace(/@(-\w+-)?keyframes\s+\w+(\s+)?{/gi, point => {
+      framesPoints.push(point.slice(0, point.length - 1));
+      return point;
+    });
+    for (let i = 0, max = framesPoints.length; i < max; i++) {
+      const frame = framesPoints[i];
+      let current = code.indexOf(frame);
+      let openCurl = 0;
+      let value = "";
+      for (;;) {
+        let c = code[current];
+        if (c === "{") {
+          openCurl++;
+          value += c;
+        } else if (c === "}") {
+          value += c;
+          if (openCurl === 1) {
+            break;
+          } else {
+            openCurl--;
+          }
+        } else {
+          value += c;
+        }
+        current++;
+      }
+      framesPoints[i] = value;
+    }
+    for (let point of framesPoints) {
+      code = code.replace(point, "");
+    }
+    this.$$keyframes = framesPoints.map(a => a.replace(/\n/gi, ""));
+    return code;
+  }
+
   private minifyMedia(media: string): string {
     const firstLeftPra = media.indexOf("{");
     const mediaCode = media.slice(0, firstLeftPra);
@@ -92,7 +133,7 @@ export class MiniCss {
 
   private removeComments(code?: string): string {
     if (!code) {
-      return this.removeComments(this.$$noMedias);
+      return this.removeComments(this.$$noKeyFrames);
     }
     return code.replace(/\/\*[^*]*\*+([^/*][^*]*\*+)*\//gi, "").trim();
   }
@@ -216,6 +257,11 @@ export class MiniCss {
           .join(",")}{${generatePropsCode(token)}}`;
       }
     });
-    return this.$$imports.join("\n") + result + this.$$medias.join("");
+    return (
+      this.$$imports.join("\n") +
+      result +
+      this.$$medias.join("") +
+      this.$$keyframes.join("")
+    );
   }
 }
