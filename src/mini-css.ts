@@ -8,7 +8,9 @@ import {
 } from "./min-css.helpers";
 
 export class MiniCss {
-  // private $$code: string;
+  private $$code: string;
+  private $$imports: string[] = [];
+  private $$noImports: string;
   private $$css: string;
   private $$blocks: Array<string>;
   private $$tokens: Array<Token>;
@@ -17,8 +19,9 @@ export class MiniCss {
   private $$generatedCSS: string;
 
   constructor(css: string) {
-    this.$$css = css;
-    // this.$$css = this.removeComments();
+    this.$$code = css;
+    this.$$noImports = this.removeImports();
+    this.$$css = this.removeComments();
     this.$$blocks = this.split();
     this.$$tokens = this.tokenizer();
     this.$$tokensAfterCombine = this.combine();
@@ -31,7 +34,17 @@ export class MiniCss {
     return "";
   }
 
-  // private
+  private removeImports(): string {
+    const code = this.$$code.replace(/@.*;/gi, imp => {
+      this.$$imports.push(imp.trim());
+      return "";
+    });
+    return code;
+  }
+
+  private removeComments(): string {
+    return this.$$noImports.replace(/(\/\*.*\*\/)|(\/\/.*\n)/gi, "").trim();
+  }
 
   private split(): Array<string> {
     const blocks: Array<string> = [];
@@ -153,24 +166,6 @@ export class MiniCss {
         `;
       }
     });
-    console.log(result);
-
-    return result;
+    return this.$$imports.join("\n") + result;
   }
 }
-
-MiniCss.compile(`
-  body {
-    color: blue;
-    font-weight: 400;
-    font-family: Tahoma,  Arial;
-  }
-  .test {
-    color: blue;
-    font-weight: 400;
-    font-family: Tahoma,  Arial;
-  }
-  body::after {
-    font-weight: bold;
-  }
-`);
