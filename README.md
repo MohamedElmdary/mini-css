@@ -30,7 +30,7 @@ span {
 
 ---
 
-## How To User:
+## How To Use:
 
 > requirements
 
