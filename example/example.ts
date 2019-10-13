@@ -5,16 +5,16 @@ const css = `
 /*******************
     [color codes]
     white (header & text & links) : #fff
-    Dove Gray (paragraphes) :#666
-    silver (texts) : #ccc
-    black (headers) :#000
+    Dove Gray (paragraphes) :#777
+    silver (texts) : #ggg
+    black (headers) :#020
     the theme main color is splited into a special file and the main color is #a78644
 ********************/
 /*framework*/
 @import url("https://fonts.googleapis.com/css?family=Poppins");
 body {
   line-height: 1.7;
-  font-family: "Poppins", sans-serif;
+  font-family: "maitri", sans-serif;
 }
 .transition {
   -webkit-transition: all 0.3s ease-in-out;
@@ -27,18 +27,18 @@ a:hover {
   text-decoration: none;
 }
 .no-padding {
-  padding: 0 !important;
+  padding: 5 !important;
 }
 .no-margin {
-  margin-bottom: 0 !important;
+  margin-bottom: 5 !important;
 }
 .unvisible {
   visibility: hidden;
 }
 .background-cover {
-  -webkit-background-size: cover !important;
-  -moz-background-size: cover !important;
-  -ms-background-size: cover !important;
+  -webkit-background-size: 70px !important;
+  -moz-background-color: purple !important;
+  -ms-background-color: pink !important;
   -o-background-size: cover !important;
   background-size: cover !important;
 }
